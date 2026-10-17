@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Buổi 4 – Review 1: Units 1, 2, 3</title>
+<style>
+:root{--bg:#f6f7fb;--card:#fff;--text:#1d2433;--muted:#5d6678;--line:#dfe3ec;--accent:#2b6cb0;--ok:#1f8a4c;--okbg:#e4f5ea;--bad:#c0392b;--badbg:#fbe9e7;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12151c;--card:#1c212c;--text:#e8ebf2;--muted:#9aa4b8;--line:#2e3545;--accent:#6aa7e8;--ok:#5fd18a;--okbg:#17321f;--bad:#ff8a7a;--badbg:#3a1d1a}}
+:root[data-theme="dark"]{--bg:#12151c;--card:#1c212c;--text:#e8ebf2;--muted:#9aa4b8;--line:#2e3545;--accent:#6aa7e8;--ok:#5fd18a;--okbg:#17321f;--bad:#ff8a7a;--badbg:#3a1d1a}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:720px;margin:0 auto;padding:20px 16px 48px}
+h1{font-size:1.4rem;margin:0 0 4px}
+h2{font-size:1.1rem;margin:22px 0 4px;color:var(--accent)}
+.sub{color:var(--muted);margin:0 0 12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:14px}
+.pass{border-left:4px solid var(--accent)}
+.pass p{margin:0 0 8px}
+.q{font-weight:600;margin:0 0 10px;line-height:2.1}
+.opt{display:flex;gap:10px;align-items:flex-start;padding:8px 10px;border:1px solid var(--line);border-radius:8px;margin-bottom:6px;cursor:pointer}
+.opt input{margin-top:4px}
+input[type=text],textarea{box-sizing:border-box;padding:8px 10px;font:inherit;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--text)}
+.card>input[type=text],textarea{width:100%}
+.q input[type=text]{width:9.5em;max-width:100%;margin:0 4px;font-weight:400}
+button{font-size:1rem;padding:10px 18px;border-radius:8px;border:0;background:var(--accent);color:#fff;cursor:pointer}
+button.sec{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+.right{border-color:var(--ok)!important;background:var(--okbg)}
+.wrong{border-color:var(--bad)!important;background:var(--badbg)}
+.fb{margin-top:8px;font-size:.92rem;color:var(--muted)}
+.tag{font-size:.8rem;color:var(--muted);font-weight:400}
+.score{font-size:1.6rem;font-weight:700}
+.bar{height:8px;background:var(--line);border-radius:4px;overflow:hidden;margin:8px 0 14px}
+.bar div{height:100%;background:var(--accent);width:0}
+</style>
+</head>
+<body>
+<main>
+<h1 id="title"></h1>
+<p class="sub" id="sub"></p>
+<div class="card"><label for="name"><b>Họ và tên</b></label><input type="text" id="name" placeholder="Nguyễn Văn A" autocomplete="name" style="width:100%;margin-top:6px"></div>
+<div class="bar"><div id="prog"></div></div>
+<div id="quiz"></div>
+<div style="display:flex;gap:10px;flex-wrap:wrap">
+<button id="submit">Nộp bài &amp; chấm điểm</button>
+<button class="sec" id="reset" style="display:none">Làm lại</button>
+</div>
+<div class="card" id="result" style="display:none;margin-top:16px">
+<div class="score" id="scoreTxt"></div>
+<p class="sub">Phần tự luận giáo viên sẽ chấm riêng. Gửi nội dung bên dưới cho giáo viên (chụp màn hình hoặc sao chép).</p>
+<textarea id="summary" rows="8" readonly></textarea>
+</div>
+</main>
+<script>
+/* ===== GIÁO VIÊN CHỈNH Ở ĐÂY =====
+ mc: q, options[], answer (bắt đầu từ 0), why
+ gap: q, answers[] (viết lại cả câu; liệt kê các đáp án chấp nhận), why
+ multi: q có nhiều chỗ ___, answers[] là danh sách theo từng chỗ trống, mỗi chỗ là mảng các đáp án chấp nhận, why
+ open: q (tự luận, không chấm tự động, gửi kèm bài cho giáo viên)
+*/
+const QUIZ = {
+  title: "Buổi 4 – Review 1: Units 1, 2, 3",
+  sub: "Ôn tập các thì đã học (present simple/continuous, past simple/continuous, used to) và từ vựng Unit 3. Bấm “Nộp bài” để xem điểm.",
+  sections: [
+    {title:"Kiểm tra ôn tập – Phần A: Dạng đúng của động từ", note:"Điền dạng đúng của động từ trong ngoặc.", items:[
+      {type:"multi", q:"I usually ___ (go) to bed at 10 p.m., but tonight I ___ (still/work).", answers:[["go"],["am still working","'m still working"]], why:"Thói quen: present simple. Đang xảy ra tối nay: present continuous (still đứng sau am)."},
+      {type:"multi", q:"While she ___ (cook) dinner, the phone ___ (ring).", answers:[["was cooking"],["rang"]], why:"Hành động đang diễn ra: past continuous; hành động xen vào: past simple."},
+      {type:"multi", q:"When I was a child, I ___ (use to/be) afraid of the dark.", answers:[["used to be"]], why:"Trạng thái trong quá khứ xa: used to + V."},
+      {type:"multi", q:"Look! Those two dogs ___ (fight) over a ball again!", answers:[["are fighting"]], why:"Đang xảy ra ngay bây giờ (Look!): present continuous."},
+      {type:"multi", q:"He ___ (not/like) loud music — he prefers something calm.", answers:[["doesn't like","does not like"]], why:"like là stative verb: present simple, không chia tiếp diễn."},
+      {type:"multi", q:"We ___ (watch) a film last night when the electricity went off.", answers:[["were watching"]], why:"Hành động đang diễn ra bị xen vào: past continuous."},
+      {type:"multi", q:"My grandfather ___ (use to/work) as a football coach many years ago.", answers:[["used to work"]], why:"Thói quen/trạng thái quá khứ xa: used to + V."},
+      {type:"multi", q:"Do you know what time the match ___ (start) tomorrow?", answers:[["starts"]], why:"Lịch trình cố định: present simple."}
+    ]},
+    {title:"Kiểm tra ôn tập – Phần B: Phrasal verb và từ vựng Unit 3", note:"Điền phrasal verb hoặc từ vựng Unit 3 phù hợp, chia đúng dạng nếu cần.", items:[
+      {type:"multi", q:"She’s really ___ football — she never misses a match. (crazy about / keen on)", answers:[["crazy about","keen on"]], why:"crazy about / keen on + danh từ."},
+      {type:"multi", q:"Could you please ___ the TV ___? It’s too loud. (turn down)", answers:[["turn"],["down"]], why:"turn down = vặn nhỏ."},
+      {type:"multi", q:"He decided to ___ tennis lessons this year. (take up)", answers:[["take up"]], why:"take up = bắt đầu một sở thích."},
+      {type:"multi", q:"After losing every game, the team finally ___ the championship. (win/defeat — chọn từ đúng nghĩa và đúng dạng)", answers:[["won"]], why:"win the championship (quá khứ: won). defeat đi với đối thủ, không đi với giải đấu."},
+      {type:"multi", q:"I’m not very ___ chess, so I always lose. (good at)", answers:[["good at"]], why:"good at + danh từ."}
+    ]},
+    {title:"Kiểm tra ôn tập – Phần C: Viết lại câu", note:"Giữ nguyên nghĩa, dùng từ gợi ý (2–5 từ). Chỉ điền phần còn thiếu.", items:[
+      {type:"multi", q:"I played the guitar every day when I was young. (USED) → I ___ the guitar every day when I was young.", answers:[["used to play"]], why:"used to + V nguyên thể."},
+      {type:"multi", q:"Anna doesn’t like watching sport on TV. (KEEN) → Anna ___ watching sport on TV.", answers:[["isn't keen on","is not keen on","'s not keen on"]], why:"not keen on + V-ing."},
+      {type:"multi", q:"It started to rain while we were walking to school. (WALKING) → While ___, it started to rain.", answers:[["we were walking to school"]], why:"While + past continuous, past simple."}
+    ]},
+    {title:"Writing – Bài 1: Hoàn thành đoạn văn", note:"Chia đúng dạng động từ trong ngoặc (nhiều thì đã học).", items:[
+      {type:"multi", q:"Last Saturday, I ___ (decide) to join a new sports club.", answers:[["decided"]], why:"Quá khứ đơn: decided."},
+      {type:"multi", q:"While I ___ (walk) there, I ___ (meet) an old friend I ___ (not/see) for years.", answers:[["was walking"],["met"],["hadn't seen","had not seen","didn't see"]], why:"was walking (nền), met (sự kiện). “Hadn’t seen” (quá khứ hoàn thành) là đáp án chuẩn nhất; didn’t see cũng được chấp nhận."},
+      {type:"multi", q:"When I ___ (be) a child, we ___ (use to/play) football together every weekend, but we ___ (lose) touch after school.", answers:[["was"],["used to play"],["lost"]], why:"was (quá khứ của be), used to play (thói quen quá khứ), lost (quá khứ đơn)."},
+      {type:"multi", q:"Now he ___ (train) to become a professional coach!", answers:[["is training","'s training"]], why:"Now: present continuous."}
+    ]},
+    {title:"Writing – Bài 2: Đoạn văn", note:"Phần này giáo viên chấm riêng.", items:[
+      {type:"open", q:"Viết 8–10 câu kể về “A club or team you used to be a member of”. Bắt buộc dùng: ít nhất 2 câu present simple, 2 câu past simple, 1 câu past continuous, 1 câu với used to, và ít nhất 3 từ vựng Unit 3."}
+    ]},
+    {title:"Reading – My Grandmother, the Champion", passage:[
+      "My grandmother is eighty years old now, but she still loves sport. When she was young, she used to play table tennis every single day, and she even became a regional champion at the age of twenty. These days, she doesn’t play competitively anymore, but she still watches every match on TV and never misses a tournament.",
+      "Last month, my family visited her for the weekend. On Saturday afternoon, while we were having lunch, she suddenly stood up and said, “Let’s play a game!” We were all surprised — she hadn’t played in years! We found an old table tennis table in the garage, and she beat all of us, one after another. She was laughing the whole time.",
+      "“I used to be really good at this,” she said afterwards, smiling. “I suppose I still am!”"
+    ], items:[
+      {type:"mc", q:"What did the grandmother use to do every day when she was young?", options:["Play table tennis","Watch tournaments on TV","Coach a football team","Train in the garden"], answer:0, why:"“she used to play table tennis every single day”."},
+      {type:"mc", q:"What title did she win at the age of twenty?", options:["Regional champion","World champion","Team captain","National referee"], answer:0, why:"“she even became a regional champion at the age of twenty”."},
+      {type:"mc", q:"What was the family doing when she suddenly suggested playing a game?", options:["Having lunch","Watching TV","Playing in the garden","Driving home"], answer:0, why:"“while we were having lunch, she suddenly stood up”."},
+      {type:"mc", q:"What happened when they played table tennis together?", options:["She beat all of them","She lost every game","They all played equally well","The game was cancelled"], answer:0, why:"“she beat all of us, one after another”."},
+      {type:"open", q:"Do you know anyone like the grandmother — someone who used to be good at something and still is? Tell me about them. (viết câu đầy đủ)"},
+      {type:"open", q:"Tìm trong bài đọc: 3 câu past simple, 2 câu past continuous, 1 câu present simple, và 1 câu với used to. Viết lại các câu đó."}
+    ]}
+  ]
+};
+/* ===== HẾT PHẦN CHỈNH ===== */
+
+const norm=s=>s.toLowerCase().replace(/[’‘]/g,"'").replace(/\s+/g," ").trim().replace(/[.!?]+$/,"").trim();
+const $=id=>document.getElementById(id);
+const quiz=$("quiz");
+$("title").textContent=QUIZ.title;$("sub").textContent=QUIZ.sub;document.title=QUIZ.title;
+const ALL=[];QUIZ.sections.forEach(s=>s.items.forEach(it=>ALL.push(it)));
+const graded=()=>ALL.map((it,i)=>[it,i]).filter(([it])=>it.type!=="open");
+const blanks=i=>Array.from(document.querySelectorAll("#c"+i+" input[type=text]"));
+
+function build(){
+  quiz.innerHTML="";let n=0;
+  QUIZ.sections.forEach(sec=>{
+    const h=document.createElement("h2");h.textContent=sec.title;quiz.appendChild(h);
+    if(sec.note){const p=document.createElement("p");p.className="sub";p.textContent=sec.note;quiz.appendChild(p);}
+    if(sec.passage){const b=document.createElement("div");b.className="card pass";sec.passage.forEach(t=>{const p=document.createElement("p");p.textContent=t;b.appendChild(p)});quiz.appendChild(b);}
+    sec.items.forEach(it=>{
+      const i=n++;
+      const c=document.createElement("div");c.className="card";c.id="c"+i;
+      const q=document.createElement("p");q.className="q";
+      if(it.type==="multi"){
+        q.append((i+1)+". ");
+        it.q.split("___").forEach((part,k,arr)=>{
+          q.append(part);
+          if(k<arr.length-1){const t=document.createElement("input");t.type="text";t.autocomplete="off";t.autocapitalize="off";t.spellcheck=false;t.oninput=progress;q.appendChild(t);}
+        });
+      }else{
+        q.textContent=(i+1)+". "+it.q;
+      }
+      if(it.type==="open"){const t=document.createElement("span");t.className="tag";t.textContent=" (tự luận)";q.appendChild(t);}
+      c.appendChild(q);
+      if(it.type==="mc"){
+        it.options.forEach((o,j)=>{
+          const l=document.createElement("label");l.className="opt";
+          const r=document.createElement("input");r.type="radio";r.name="q"+i;r.value=j;r.onchange=progress;
+          const s=document.createElement("span");s.textContent=o;
+          l.append(r,s);c.appendChild(l);
+        });
+      }else if(it.type==="gap"){
+        const t=document.createElement("input");t.type="text";t.autocomplete="off";t.autocapitalize="off";t.spellcheck=false;t.oninput=progress;c.appendChild(t);
+      }else if(it.type==="open"){
+        const t=document.createElement("textarea");t.rows=4;c.appendChild(t);
+      }
+      const fb=document.createElement("div");fb.className="fb";fb.id="f"+i;c.appendChild(fb);
+      quiz.appendChild(c);
+    });
+  });
+  progress();
+}
+function answered(i){
+  const it=ALL[i];
+  if(it.type==="mc")return !!document.querySelector('input[name="q'+i+'"]:checked');
+  return blanks(i).some(b=>b.value.trim()!=="");
+}
+function progress(){
+  const g=graded(),n=g.filter(([,i])=>answered(i)).length;
+  $("prog").style.width=(100*n/g.length)+"%";
+}
+function grade(){
+  let score=0;
+  graded().forEach(([it,i])=>{
+    const c=$("c"+i),fb=$("f"+i);let ok=false,shown="";
+    if(it.type==="mc"){
+      const ch=document.querySelector('input[name="q'+i+'"]:checked');
+      ok=!!ch&&+ch.value===it.answer;shown=it.options[it.answer];
+      c.querySelectorAll(".opt").forEach((l,j)=>{
+        l.classList.remove("right","wrong");
+        if(j===it.answer)l.classList.add("right");else if(ch&&+ch.value===j)l.classList.add("wrong");
+        l.querySelector("input").disabled=true;
+      });
+    }else if(it.type==="multi"){
+      const bs=blanks(i);ok=true;
+      bs.forEach((b,k)=>{
+        const good=it.answers[k].some(a=>norm(a)===norm(b.value));
+        b.classList.remove("right","wrong");b.classList.add(good?"right":"wrong");b.disabled=true;
+        if(!good)ok=false;
+      });
+      shown=it.answers.map(a=>a[0]).join(" … ");
+    }else{
+      const t=blanks(i)[0];ok=it.answers.some(a=>norm(a)===norm(t.value));shown=it.answers[0];
+      t.classList.remove("right","wrong");t.classList.add(ok?"right":"wrong");t.disabled=true;
+    }
+    if(ok)score++;
+    fb.textContent=(ok?"✓ Đúng. ":"✗ Sai. Đáp án: "+shown+". ")+(it.why||"");
+  });
+  ALL.forEach((it,i)=>{if(it.type==="open"){document.querySelector("#c"+i+" textarea").readOnly=true;$("f"+i).textContent="Giáo viên sẽ chấm phần này.";}});
+  const total=graded().length,name=$("name").value.trim()||"(chưa nhập tên)";
+  $("scoreTxt").textContent="Điểm tự động: "+score+"/"+total+" ("+Math.round(100*score/total)/10+"/10)";
+  let s=name+" – "+QUIZ.title+"\nĐiểm tự động: "+score+"/"+total+"\nNgày: "+new Date().toLocaleString("vi-VN");
+  ALL.forEach((it,i)=>{if(it.type==="open"){const v=document.querySelector("#c"+i+" textarea").value.trim();s+="\n\n["+(i+1)+"] "+(v||"(bỏ trống)");}});
+  $("summary").value=s;
+  $("result").style.display="block";$("reset").style.display="inline-block";$("submit").style.display="none";
+  $("result").scrollIntoView({behavior:"smooth"});
+}
+$("submit").onclick=()=>{
+  const left=graded().filter(([,i])=>!answered(i)).length;
+  if(left&&!confirm("Còn "+left+" câu chưa làm. Vẫn nộp bài?"))return;
+  grade();
+};
+$("reset").onclick=()=>{build();$("result").style.display="none";$("reset").style.display="none";$("submit").style.display="inline-block";window.scrollTo({top:0,behavior:"smooth"})};
+build();
+</script>
+</body>
+</html>
