@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Buổi 6 – Unit 5: Past perfect simple & continuous</title>
+<style>
+:root{--bg:#f6f7fb;--card:#fff;--text:#1d2433;--muted:#5d6678;--line:#dfe3ec;--accent:#2b6cb0;--ok:#1f8a4c;--okbg:#e4f5ea;--bad:#c0392b;--badbg:#fbe9e7;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12151c;--card:#1c212c;--text:#e8ebf2;--muted:#9aa4b8;--line:#2e3545;--accent:#6aa7e8;--ok:#5fd18a;--okbg:#17321f;--bad:#ff8a7a;--badbg:#3a1d1a}}
+:root[data-theme="dark"]{--bg:#12151c;--card:#1c212c;--text:#e8ebf2;--muted:#9aa4b8;--line:#2e3545;--accent:#6aa7e8;--ok:#5fd18a;--okbg:#17321f;--bad:#ff8a7a;--badbg:#3a1d1a}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:720px;margin:0 auto;padding:20px 16px 48px}
+h1{font-size:1.4rem;margin:0 0 4px}
+h2{font-size:1.1rem;margin:22px 0 4px;color:var(--accent)}
+.sub{color:var(--muted);margin:0 0 12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:14px}
+.pass{border-left:4px solid var(--accent)}
+.pass p{margin:0 0 8px}
+.q{font-weight:600;margin:0 0 10px;line-height:2.1}
+.opt{display:flex;gap:10px;align-items:flex-start;padding:8px 10px;border:1px solid var(--line);border-radius:8px;margin-bottom:6px;cursor:pointer}
+.opt input{margin-top:4px}
+input[type=text],textarea{box-sizing:border-box;padding:8px 10px;font:inherit;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--text)}
+.card>input[type=text],textarea{width:100%}
+.q input[type=text]{width:9.5em;max-width:100%;margin:0 4px;font-weight:400}
+button{font-size:1rem;padding:10px 18px;border-radius:8px;border:0;background:var(--accent);color:#fff;cursor:pointer}
+button.sec{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+.right{border-color:var(--ok)!important;background:var(--okbg)}
+.wrong{border-color:var(--bad)!important;background:var(--badbg)}
+.fb{margin-top:8px;font-size:.92rem;color:var(--muted)}
+.tag{font-size:.8rem;color:var(--muted);font-weight:400}
+.score{font-size:1.6rem;font-weight:700}
+.bar{height:8px;background:var(--line);border-radius:4px;overflow:hidden;margin:8px 0 14px}
+.bar div{height:100%;background:var(--accent);width:0}
+</style>
+</head>
+<body>
+<main>
+<h1 id="title"></h1>
+<p class="sub" id="sub"></p>
+<div class="card"><label for="name"><b>Họ và tên</b></label><input type="text" id="name" placeholder="Nguyễn Văn A" autocomplete="name" style="width:100%;margin-top:6px"></div>
+<div class="bar"><div id="prog"></div></div>
+<div id="quiz"></div>
+<div style="display:flex;gap:10px;flex-wrap:wrap">
+<button id="submit">Nộp bài &amp; chấm điểm</button>
+<button class="sec" id="reset" style="display:none">Làm lại</button>
+</div>
+<div class="card" id="result" style="display:none;margin-top:16px">
+<div class="score" id="scoreTxt"></div>
+<p class="sub">Phần tự luận giáo viên sẽ chấm riêng. Gửi nội dung bên dưới cho giáo viên (chụp màn hình hoặc sao chép).</p>
+<textarea id="summary" rows="8" readonly></textarea>
+</div>
+</main>
+<script>
+/* ===== GIÁO VIÊN CHỈNH Ở ĐÂY =====
+ mc: q, options[], answer (bắt đầu từ 0), why
+ gap: q, answers[] (viết lại cả câu; liệt kê các đáp án chấp nhận), why
+ multi: q có nhiều chỗ ___, answers[] là danh sách theo từng chỗ trống, mỗi chỗ là mảng các đáp án chấp nhận, why
+ open: q (tự luận, không chấm tự động, gửi kèm bài cho giáo viên)
+*/
+const QUIZ = {
+  title: "Buổi 6 – Unit 5: Past perfect simple & continuous",
+  sub: "Past perfect simple (had + V3) và past perfect continuous (had been + V-ing). Bấm “Nộp bài” để xem điểm.",
+  sections: [
+    {title:"Writing – Bài 1: Chia động từ", note:"Điền past perfect simple hoặc past perfect continuous của động từ trong ngoặc.", items:[
+      {type:"multi", q:"By the time I got to the station, the train ___ (already/leave).", answers:[["had already left","'d already left"]], why:"Hành động xảy ra trước một thời điểm trong quá khứ: past perfect simple."},
+      {type:"multi", q:"She was out of breath because she ___ (run) for twenty minutes.", answers:[["had been running","'d been running"]], why:"for + khoảng thời gian, dừng ngay trước thời điểm quá khứ: past perfect continuous."},
+      {type:"multi", q:"We ___ (not/finish) dinner when the guests arrived.", answers:[["hadn't finished","had not finished"]], why:"Past perfect simple phủ định."},
+      {type:"multi", q:"He was tired because he ___ (study) all night for the exam.", answers:[["had been studying","'d been studying"]], why:"all night: nhấn mạnh quá trình, past perfect continuous."},
+      {type:"multi", q:"___ you ___ (meet) her before the party last week?", answers:[["had"],["met"]], why:"Had you met …? past perfect simple dạng nghi vấn."},
+      {type:"multi", q:"They ___ (just/sit down) when the film started.", answers:[["had just sat down","'d just sat down"]], why:"just + past perfect simple: vừa mới xảy ra trước một thời điểm quá khứ."}
+    ]},
+    {title:"Writing – Bài 2: Past simple hay past perfect simple?", note:"Chọn đáp án đúng theo nghĩa được gợi ý trong ngoặc.", items:[
+      {type:"mc", q:"The film ___ when we sat down. (Ý nghĩa: chúng tôi đã bỏ lỡ phần đầu phim)", options:["had started","started"], answer:0, why:"Phim bắt đầu trước, rồi chúng tôi mới ngồi xuống: past perfect. Nếu dùng “started” thì phim bắt đầu sau khi chúng tôi ngồi."},
+      {type:"mc", q:"I ___ breakfast when my sister called. (Ý nghĩa: tôi đã ăn xong rồi chị mới gọi)", options:["had eaten","ate"], answer:0, why:"Ăn xong trước, chị gọi sau: past perfect. “ate” nghĩa là chị gọi trước rồi tôi mới ăn."},
+      {type:"mc", q:"By 8 p.m., she ___ all her homework.", options:["had finished","finished"], answer:0, why:"By + mốc thời gian trong quá khứ: past perfect."}
+    ]},
+    {title:"Luyện thêm – Từ nhận biết", note:"Phần bổ sung từ bảng lý thuyết. Điền một từ (by, before, after, just, for...).", items:[
+      {type:"multi", q:"I’d finished my homework ___ eight o’clock.", answers:[["by"]], why:"by + mốc thời gian."},
+      {type:"multi", q:"___ the time I got to class, the lesson had started.", answers:[["by"]], why:"By the time + past simple, past perfect."},
+      {type:"multi", q:"The teacher had checked the answers ___ the lesson.", answers:[["before"]], why:"before: hành động trước xảy ra trước."},
+      {type:"multi", q:"I left ___ I’d finished the test.", answers:[["after","when"]], why:"after/when + past perfect."},
+      {type:"multi", q:"Simon had ___ finished the test when the bell rang.", answers:[["just"]], why:"had just + V3."},
+      {type:"multi", q:"Tony had been studying ___ hours, so he had a headache.", answers:[["for"]], why:"for + khoảng thời gian."}
+    ]},
+    {title:"Writing – Bài 3: Đoạn văn", note:"Phần này giáo viên chấm riêng.", items:[
+      {type:"open", q:"Viết 6–8 câu kể lại một ngày đặc biệt/đáng nhớ (A memorable day), trong đó có ít nhất 1 việc đã xảy ra trước một việc khác. Dùng ít nhất 2 câu past simple, 2 câu past perfect simple, 1 câu past perfect continuous."}
+    ]},
+    {title:"Reading – The Missed Flight", passage:[
+      "When Tom arrived at the airport, he realised something was wrong. He had been travelling for over three hours to get there, but the departure board showed no sign of his flight. He had checked the time twice before leaving home, so he was sure he wasn’t late.",
+      "He walked up to the information desk. The woman there looked at his ticket and sighed. “I’m sorry,” she said, “but your flight left an hour ago. It had been delayed all morning because of the weather, so they decided to leave as soon as it was ready — earlier than the original time.”",
+      "Tom couldn’t believe it. He had been planning this trip for months, and he had already told his family he was coming. He had never missed a flight before in his life. After a few minutes of shock, he took a deep breath and asked about the next available flight."
+    ], items:[
+      {type:"mc", q:"How long had Tom been travelling before he arrived at the airport?", options:["For over three hours","For months","For an hour","For a whole day"], answer:0, why:"“He had been travelling for over three hours”."},
+      {type:"mc", q:"What had Tom done twice before leaving home?", options:["Checked the time","Checked his ticket","Called his family","Packed his bags"], answer:0, why:"“He had checked the time twice before leaving home”."},
+      {type:"mc", q:"Why had the flight left earlier than expected?", options:["It had been delayed because of the weather, so it left as soon as it was ready","The pilot was in a hurry","Tom’s ticket had the wrong time","The airport had changed the schedule"], answer:0, why:"Chuyến bay bị hoãn cả buổi sáng vì thời tiết nên cất cánh ngay khi sẵn sàng."},
+      {type:"mc", q:"What had Tom already told his family before this happened?", options:["That he was coming","That he would miss the flight","That the trip was cancelled","That he was staying at the airport"], answer:0, why:"“he had already told his family he was coming”."},
+      {type:"open", q:"Has something like this ever happened to you? What had you been doing/planning beforehand? (viết câu đầy đủ)"},
+      {type:"open", q:"Tìm trong bài đọc 3 câu past perfect simple và 1 câu past perfect continuous. Viết lại các câu đó và giải thích tại sao mỗi câu dùng thì đó (việc gì xảy ra trước việc gì)."}
+    ]}
+  ]
+};
+/* ===== HẾT PHẦN CHỈNH ===== */
+
+const norm=s=>s.toLowerCase().replace(/[’‘]/g,"'").replace(/\s+/g," ").trim().replace(/[.!?]+$/,"").trim();
+const $=id=>document.getElementById(id);
+const quiz=$("quiz");
+$("title").textContent=QUIZ.title;$("sub").textContent=QUIZ.sub;document.title=QUIZ.title;
+const ALL=[];QUIZ.sections.forEach(s=>s.items.forEach(it=>ALL.push(it)));
+const graded=()=>ALL.map((it,i)=>[it,i]).filter(([it])=>it.type!=="open");
+const blanks=i=>Array.from(document.querySelectorAll("#c"+i+" input[type=text]"));
+
+function build(){
+  quiz.innerHTML="";let n=0;
+  QUIZ.sections.forEach(sec=>{
+    const h=document.createElement("h2");h.textContent=sec.title;quiz.appendChild(h);
+    if(sec.note){const p=document.createElement("p");p.className="sub";p.textContent=sec.note;quiz.appendChild(p);}
+    if(sec.passage){const b=document.createElement("div");b.className="card pass";sec.passage.forEach(t=>{const p=document.createElement("p");p.textContent=t;b.appendChild(p)});quiz.appendChild(b);}
+    sec.items.forEach(it=>{
+      const i=n++;
+      const c=document.createElement("div");c.className="card";c.id="c"+i;
+      const q=document.createElement("p");q.className="q";
+      if(it.type==="multi"){
+        q.append((i+1)+". ");
+        it.q.split("___").forEach((part,k,arr)=>{
+          q.append(part);
+          if(k<arr.length-1){const t=document.createElement("input");t.type="text";t.autocomplete="off";t.autocapitalize="off";t.spellcheck=false;t.oninput=progress;q.appendChild(t);}
+        });
+      }else{
+        q.textContent=(i+1)+". "+it.q;
+      }
+      if(it.type==="open"){const t=document.createElement("span");t.className="tag";t.textContent=" (tự luận)";q.appendChild(t);}
+      c.appendChild(q);
+      if(it.type==="mc"){
+        it.options.forEach((o,j)=>{
+          const l=document.createElement("label");l.className="opt";
+          const r=document.createElement("input");r.type="radio";r.name="q"+i;r.value=j;r.onchange=progress;
+          const s=document.createElement("span");s.textContent=o;
+          l.append(r,s);c.appendChild(l);
+        });
+      }else if(it.type==="gap"){
+        const t=document.createElement("input");t.type="text";t.autocomplete="off";t.autocapitalize="off";t.spellcheck=false;t.oninput=progress;c.appendChild(t);
+      }else if(it.type==="open"){
+        const t=document.createElement("textarea");t.rows=4;c.appendChild(t);
+      }
+      const fb=document.createElement("div");fb.className="fb";fb.id="f"+i;c.appendChild(fb);
+      quiz.appendChild(c);
+    });
+  });
+  progress();
+}
+function answered(i){
+  const it=ALL[i];
+  if(it.type==="mc")return !!document.querySelector('input[name="q'+i+'"]:checked');
+  return blanks(i).some(b=>b.value.trim()!=="");
+}
+function progress(){
+  const g=graded(),n=g.filter(([,i])=>answered(i)).length;
+  $("prog").style.width=(100*n/g.length)+"%";
+}
+function grade(){
+  let score=0;
+  graded().forEach(([it,i])=>{
+    const c=$("c"+i),fb=$("f"+i);let ok=false,shown="";
+    if(it.type==="mc"){
+      const ch=document.querySelector('input[name="q'+i+'"]:checked');
+      ok=!!ch&&+ch.value===it.answer;shown=it.options[it.answer];
+      c.querySelectorAll(".opt").forEach((l,j)=>{
+        l.classList.remove("right","wrong");
+        if(j===it.answer)l.classList.add("right");else if(ch&&+ch.value===j)l.classList.add("wrong");
+        l.querySelector("input").disabled=true;
+      });
+    }else if(it.type==="multi"){
+      const bs=blanks(i);ok=true;
+      bs.forEach((b,k)=>{
+        const good=it.answers[k].some(a=>norm(a)===norm(b.value));
+        b.classList.remove("right","wrong");b.classList.add(good?"right":"wrong");b.disabled=true;
+        if(!good)ok=false;
+      });
+      shown=it.answers.map(a=>a[0]).join(" … ");
+    }else{
+      const t=blanks(i)[0];ok=it.answers.some(a=>norm(a)===norm(t.value));shown=it.answers[0];
+      t.classList.remove("right","wrong");t.classList.add(ok?"right":"wrong");t.disabled=true;
+    }
+    if(ok)score++;
+    fb.textContent=(ok?"✓ Đúng. ":"✗ Sai. Đáp án: "+shown+". ")+(it.why||"");
+  });
+  ALL.forEach((it,i)=>{if(it.type==="open"){document.querySelector("#c"+i+" textarea").readOnly=true;$("f"+i).textContent="Giáo viên sẽ chấm phần này.";}});
+  const total=graded().length,name=$("name").value.trim()||"(chưa nhập tên)";
+  $("scoreTxt").textContent="Điểm tự động: "+score+"/"+total+" ("+Math.round(100*score/total)/10+"/10)";
+  let s=name+" – "+QUIZ.title+"\nĐiểm tự động: "+score+"/"+total+"\nNgày: "+new Date().toLocaleString("vi-VN");
+  ALL.forEach((it,i)=>{if(it.type==="open"){const v=document.querySelector("#c"+i+" textarea").value.trim();s+="\n\n["+(i+1)+"] "+(v||"(bỏ trống)");}});
+  $("summary").value=s;
+  $("result").style.display="block";$("reset").style.display="inline-block";$("submit").style.display="none";
+  $("result").scrollIntoView({behavior:"smooth"});
+}
+$("submit").onclick=()=>{
+  const left=graded().filter(([,i])=>!answered(i)).length;
+  if(left&&!confirm("Còn "+left+" câu chưa làm. Vẫn nộp bài?"))return;
+  grade();
+};
+$("reset").onclick=()=>{build();$("result").style.display="none";$("reset").style.display="none";$("submit").style.display="inline-block";window.scrollTo({top:0,behavior:"smooth"})};
+build();
+</script>
+</body>
+</html>
