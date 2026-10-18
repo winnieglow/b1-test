@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Buổi 13 – Unit 10: The passive 1</title>
+<style>
+:root{--bg:#f6f7fb;--card:#fff;--text:#1d2433;--muted:#5d6678;--line:#dfe3ec;--accent:#2b6cb0;--ok:#1f8a4c;--okbg:#e4f5ea;--bad:#c0392b;--badbg:#fbe9e7;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12151c;--card:#1c212c;--text:#e8ebf2;--muted:#9aa4b8;--line:#2e3545;--accent:#6aa7e8;--ok:#5fd18a;--okbg:#17321f;--bad:#ff8a7a;--badbg:#3a1d1a}}
+:root[data-theme="dark"]{--bg:#12151c;--card:#1c212c;--text:#e8ebf2;--muted:#9aa4b8;--line:#2e3545;--accent:#6aa7e8;--ok:#5fd18a;--okbg:#17321f;--bad:#ff8a7a;--badbg:#3a1d1a}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:720px;margin:0 auto;padding:20px 16px 48px}
+h1{font-size:1.4rem;margin:0 0 4px}
+h2{font-size:1.1rem;margin:22px 0 4px;color:var(--accent)}
+.sub{color:var(--muted);margin:0 0 12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:14px}
+.pass{border-left:4px solid var(--accent)}
+.pass p{margin:0 0 8px}
+.q{font-weight:600;margin:0 0 10px;line-height:2.1}
+.opt{display:flex;gap:10px;align-items:flex-start;padding:8px 10px;border:1px solid var(--line);border-radius:8px;margin-bottom:6px;cursor:pointer}
+.opt input{margin-top:4px}
+input[type=text],textarea{box-sizing:border-box;padding:8px 10px;font:inherit;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--text)}
+.card>input[type=text],textarea{width:100%}
+.q input[type=text]{width:9.5em;max-width:100%;margin:0 4px;font-weight:400}
+button{font-size:1rem;padding:10px 18px;border-radius:8px;border:0;background:var(--accent);color:#fff;cursor:pointer}
+button.sec{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+.right{border-color:var(--ok)!important;background:var(--okbg)}
+.wrong{border-color:var(--bad)!important;background:var(--badbg)}
+.fb{margin-top:8px;font-size:.92rem;color:var(--muted)}
+.tag{font-size:.8rem;color:var(--muted);font-weight:400}
+.score{font-size:1.6rem;font-weight:700}
+.bar{height:8px;background:var(--line);border-radius:4px;overflow:hidden;margin:8px 0 14px}
+.bar div{height:100%;background:var(--accent);width:0}
+</style>
+</head>
+<body>
+<main>
+<h1 id="title"></h1>
+<p class="sub" id="sub"></p>
+<div class="card"><label for="name"><b>Họ và tên</b></label><input type="text" id="name" placeholder="Nguyễn Văn A" autocomplete="name" style="width:100%;margin-top:6px"></div>
+<div class="bar"><div id="prog"></div></div>
+<div id="quiz"></div>
+<div style="display:flex;gap:10px;flex-wrap:wrap">
+<button id="submit">Nộp bài &amp; chấm điểm</button>
+<button class="sec" id="reset" style="display:none">Làm lại</button>
+</div>
+<div class="card" id="result" style="display:none;margin-top:16px">
+<div class="score" id="scoreTxt"></div>
+<p class="sub">Phần tự luận giáo viên sẽ chấm riêng. Gửi nội dung bên dưới cho giáo viên (chụp màn hình hoặc sao chép).</p>
+<textarea id="summary" rows="8" readonly></textarea>
+</div>
+</main>
+<script>
+/* ===== GIÁO VIÊN CHỈNH Ở ĐÂY =====
+ mc: q, options[], answer (bắt đầu từ 0), why
+ gap: q, answers[] (viết lại cả câu; liệt kê các đáp án chấp nhận), why
+ multi: q có nhiều chỗ ___, answers[] là danh sách theo từng chỗ trống, mỗi chỗ là mảng các đáp án chấp nhận, why
+ open: q (tự luận, không chấm tự động, gửi kèm bài cho giáo viên)
+*/
+const QUIZ = {
+  title: "Buổi 13 – Unit 10: The passive 1",
+  sub: "Câu bị động: be + V3 (present simple, past simple, will). Bấm “Nộp bài” để xem điểm.",
+  sections: [
+    {title:"Writing – Bài 1: Chuyển sang câu bị động", note:"Viết lại cả câu ở dạng bị động. Có thể bỏ phần “by …” nếu không cần.", items:[
+      {type:"gap", q:"Someone cleans this office every evening.", answers:["This office is cleaned every evening","Every evening this office is cleaned","Every evening, this office is cleaned"], why:"Present simple bị động: is/are + V3. “Someone” có thể bỏ."},
+      {type:"gap", q:"The police caught the thief yesterday.", answers:["The thief was caught yesterday","The thief was caught by the police yesterday","Yesterday the thief was caught","Yesterday, the thief was caught","Yesterday the thief was caught by the police","The thief was caught yesterday by the police"], why:"Past simple bị động: was/were + V3."},
+      {type:"gap", q:"They will announce the results next week.", answers:["The results will be announced next week","Next week the results will be announced","Next week, the results will be announced"], why:"will + be + V3."},
+      {type:"gap", q:"People speak English all over the world.", answers:["English is spoken all over the world"], why:"Present simple bị động: is spoken."},
+      {type:"gap", q:"Someone broke my phone at the party.", answers:["My phone was broken at the party","My phone was broken by someone at the party"], why:"Past simple bị động: was broken."},
+      {type:"gap", q:"They won’t finish the bridge this year.", answers:["The bridge won't be finished this year","The bridge will not be finished this year","This year the bridge won't be finished","This year the bridge will not be finished"], why:"won’t + be + V3."}
+    ]},
+    {title:"Writing – Bài 2: Dạng bị động đúng", note:"Điền dạng bị động đúng của động từ trong ngoặc.", items:[
+      {type:"multi", q:"This bridge ___ (build) in 1990.", answers:[["was built"]], why:"Mốc quá khứ (1990): past simple bị động."},
+      {type:"multi", q:"Milk ___ (usually/keep) in the fridge.", answers:[["is usually kept"]], why:"Present simple bị động; usually đứng sau is."},
+      {type:"multi", q:"___ you ___ (invite) to the wedding next month?", answers:[["will"],["be invited"]], why:"Câu hỏi will bị động: Will + chủ ngữ + be + V3."},
+      {type:"multi", q:"The letter ___ (not/send) yet.", answers:[["hasn't been sent","has not been sent"]], why:"yet đi với present perfect, bị động: hasn’t been sent. (Dạng này vượt ra ngoài 3 thì của Unit 10.)"},
+      {type:"multi", q:"How ___ this word ___ (spell)?", answers:[["is"],["spelled","spelt"]], why:"Present simple bị động dạng nghi vấn: How is this word spelled?"}
+    ]},
+    {title:"Luyện thêm – Past participle (V3)", note:"Phần bổ sung: điền dạng V3 của động từ bất quy tắc (cần cho câu bị động).", items:[
+      {type:"multi", q:"steal → ___", answers:[["stolen"]], why:"steal – stole – stolen."},
+      {type:"multi", q:"break → ___", answers:[["broken"]], why:"break – broke – broken."},
+      {type:"multi", q:"catch → ___", answers:[["caught"]], why:"catch – caught – caught."},
+      {type:"multi", q:"build → ___", answers:[["built"]], why:"build – built – built."},
+      {type:"multi", q:"write → ___", answers:[["written"]], why:"write – wrote – written."},
+      {type:"multi", q:"speak → ___", answers:[["spoken"]], why:"speak – spoke – spoken."}
+    ]},
+    {title:"Writing – Bài 3: Đoạn văn", note:"Phần này giáo viên chấm riêng.", items:[
+      {type:"open", q:"Viết 6–8 câu miêu tả cách một sản phẩm bạn quen thuộc được sản xuất/làm ra (How a product you know is made), ví dụ: cà phê, bánh mì, quần áo. Dùng ít nhất 5 câu bị động (present simple hoặc past simple)."}
+    ]},
+    {title:"Reading – The Museum Robbery", passage:[
+      "Last night, a famous painting was stolen from the city museum. The alarm was heard at around midnight, but by the time the police arrived, the thieves had already escaped. The painting, which is worth millions of dollars, was taken from the main hall.",
+      "According to the museum director, several security cameras were damaged before the robbery, which suggests it was carefully planned. “This painting has been kept in our museum for over fifty years,” she said. “It will be greatly missed by visitors.”",
+      "The police have not caught the thieves yet, but they are confident the painting will be found soon. A reward is being offered for any information that leads to its recovery, and the public is being asked to report anything suspicious."
+    ], items:[
+      {type:"mc", q:"What was stolen from the museum, and when?", options:["A famous painting, last night","A statue, last week","Several cameras, yesterday morning","A diamond, last month"], answer:0, why:"“Last night, a famous painting was stolen from the city museum.”"},
+      {type:"mc", q:"What happened before the robbery, according to the director?", options:["Several security cameras were damaged","The alarm was turned off by the police","The main hall was closed","The painting was moved"], answer:0, why:"“several security cameras were damaged before the robbery”."},
+      {type:"mc", q:"How long had the painting been kept in the museum?", options:["For over fifty years","For about five years","Since last month","For a few days"], answer:0, why:"“This painting has been kept in our museum for over fifty years”."},
+      {type:"mc", q:"What is being offered to help find the painting?", options:["A reward for information","A free museum ticket","A new job at the museum","Extra police officers"], answer:0, why:"“A reward is being offered for any information that leads to its recovery”."},
+      {type:"open", q:"Have you ever heard of a similar robbery in the news? What happened? (viết câu đầy đủ)"},
+      {type:"open", q:"Tìm trong bài đọc 6 câu bị động. Viết lại các câu đó và chuyển sang câu chủ động tương ứng."}
+    ]}
+  ]
+};
+/* ===== HẾT PHẦN CHỈNH ===== */
+
+const norm=s=>s.toLowerCase().replace(/[’‘]/g,"'").replace(/\s+/g," ").trim().replace(/[.!?]+$/,"").trim();
+const $=id=>document.getElementById(id);
+const quiz=$("quiz");
+$("title").textContent=QUIZ.title;$("sub").textContent=QUIZ.sub;document.title=QUIZ.title;
+const ALL=[];QUIZ.sections.forEach(s=>s.items.forEach(it=>ALL.push(it)));
+const graded=()=>ALL.map((it,i)=>[it,i]).filter(([it])=>it.type!=="open");
+const blanks=i=>Array.from(document.querySelectorAll("#c"+i+" input[type=text]"));
+
+function build(){
+  quiz.innerHTML="";let n=0;
+  QUIZ.sections.forEach(sec=>{
+    const h=document.createElement("h2");h.textContent=sec.title;quiz.appendChild(h);
+    if(sec.note){const p=document.createElement("p");p.className="sub";p.textContent=sec.note;quiz.appendChild(p);}
+    if(sec.passage){const b=document.createElement("div");b.className="card pass";sec.passage.forEach(t=>{const p=document.createElement("p");p.textContent=t;b.appendChild(p)});quiz.appendChild(b);}
+    sec.items.forEach(it=>{
+      const i=n++;
+      const c=document.createElement("div");c.className="card";c.id="c"+i;
+      const q=document.createElement("p");q.className="q";
+      if(it.type==="multi"){
+        q.append((i+1)+". ");
+        it.q.split("___").forEach((part,k,arr)=>{
+          q.append(part);
+          if(k<arr.length-1){const t=document.createElement("input");t.type="text";t.autocomplete="off";t.autocapitalize="off";t.spellcheck=false;t.oninput=progress;q.appendChild(t);}
+        });
+      }else{
+        q.textContent=(i+1)+". "+it.q;
+      }
+      if(it.type==="open"){const t=document.createElement("span");t.className="tag";t.textContent=" (tự luận)";q.appendChild(t);}
+      c.appendChild(q);
+      if(it.type==="mc"){
+        it.options.forEach((o,j)=>{
+          const l=document.createElement("label");l.className="opt";
+          const r=document.createElement("input");r.type="radio";r.name="q"+i;r.value=j;r.onchange=progress;
+          const s=document.createElement("span");s.textContent=o;
+          l.append(r,s);c.appendChild(l);
+        });
+      }else if(it.type==="gap"){
+        const t=document.createElement("input");t.type="text";t.autocomplete="off";t.autocapitalize="off";t.spellcheck=false;t.oninput=progress;c.appendChild(t);
+      }else if(it.type==="open"){
+        const t=document.createElement("textarea");t.rows=4;c.appendChild(t);
+      }
+      const fb=document.createElement("div");fb.className="fb";fb.id="f"+i;c.appendChild(fb);
+      quiz.appendChild(c);
+    });
+  });
+  progress();
+}
+function answered(i){
+  const it=ALL[i];
+  if(it.type==="mc")return !!document.querySelector('input[name="q'+i+'"]:checked');
+  return blanks(i).some(b=>b.value.trim()!=="");
+}
+function progress(){
+  const g=graded(),n=g.filter(([,i])=>answered(i)).length;
+  $("prog").style.width=(100*n/g.length)+"%";
+}
+function grade(){
+  let score=0;
+  graded().forEach(([it,i])=>{
+    const c=$("c"+i),fb=$("f"+i);let ok=false,shown="";
+    if(it.type==="mc"){
+      const ch=document.querySelector('input[name="q'+i+'"]:checked');
+      ok=!!ch&&+ch.value===it.answer;shown=it.options[it.answer];
+      c.querySelectorAll(".opt").forEach((l,j)=>{
+        l.classList.remove("right","wrong");
+        if(j===it.answer)l.classList.add("right");else if(ch&&+ch.value===j)l.classList.add("wrong");
+        l.querySelector("input").disabled=true;
+      });
+    }else if(it.type==="multi"){
+      const bs=blanks(i);ok=true;
+      bs.forEach((b,k)=>{
+        const good=it.answers[k].some(a=>norm(a)===norm(b.value));
+        b.classList.remove("right","wrong");b.classList.add(good?"right":"wrong");b.disabled=true;
+        if(!good)ok=false;
+      });
+      shown=it.answers.map(a=>a[0]).join(" … ");
+    }else{
+      const t=blanks(i)[0];ok=it.answers.some(a=>norm(a)===norm(t.value));shown=it.answers[0];
+      t.classList.remove("right","wrong");t.classList.add(ok?"right":"wrong");t.disabled=true;
+    }
+    if(ok)score++;
+    fb.textContent=(ok?"✓ Đúng. ":"✗ Sai. Đáp án: "+shown+". ")+(it.why||"");
+  });
+  ALL.forEach((it,i)=>{if(it.type==="open"){document.querySelector("#c"+i+" textarea").readOnly=true;$("f"+i).textContent="Giáo viên sẽ chấm phần này.";}});
+  const total=graded().length,name=$("name").value.trim()||"(chưa nhập tên)";
+  $("scoreTxt").textContent="Điểm tự động: "+score+"/"+total+" ("+Math.round(100*score/total)/10+"/10)";
+  let s=name+" – "+QUIZ.title+"\nĐiểm tự động: "+score+"/"+total+"\nNgày: "+new Date().toLocaleString("vi-VN");
+  ALL.forEach((it,i)=>{if(it.type==="open"){const v=document.querySelector("#c"+i+" textarea").value.trim();s+="\n\n["+(i+1)+"] "+(v||"(bỏ trống)");}});
+  $("summary").value=s;
+  $("result").style.display="block";$("reset").style.display="inline-block";$("submit").style.display="none";
+  $("result").scrollIntoView({behavior:"smooth"});
+}
+$("submit").onclick=()=>{
+  const left=graded().filter(([,i])=>!answered(i)).length;
+  if(left&&!confirm("Còn "+left+" câu chưa làm. Vẫn nộp bài?"))return;
+  grade();
+};
+$("reset").onclick=()=>{build();$("result").style.display="none";$("reset").style.display="none";$("submit").style.display="inline-block";window.scrollTo({top:0,behavior:"smooth"})};
+build();
+</script>
+</body>
+</html>
