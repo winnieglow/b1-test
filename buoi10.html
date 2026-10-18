@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Buổi 10 – Unit 8: Prepositions of time and place</title>
+<style>
+:root{--bg:#f6f7fb;--card:#fff;--text:#1d2433;--muted:#5d6678;--line:#dfe3ec;--accent:#2b6cb0;--ok:#1f8a4c;--okbg:#e4f5ea;--bad:#c0392b;--badbg:#fbe9e7;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12151c;--card:#1c212c;--text:#e8ebf2;--muted:#9aa4b8;--line:#2e3545;--accent:#6aa7e8;--ok:#5fd18a;--okbg:#17321f;--bad:#ff8a7a;--badbg:#3a1d1a}}
+:root[data-theme="dark"]{--bg:#12151c;--card:#1c212c;--text:#e8ebf2;--muted:#9aa4b8;--line:#2e3545;--accent:#6aa7e8;--ok:#5fd18a;--okbg:#17321f;--bad:#ff8a7a;--badbg:#3a1d1a}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:720px;margin:0 auto;padding:20px 16px 48px}
+h1{font-size:1.4rem;margin:0 0 4px}
+h2{font-size:1.1rem;margin:22px 0 4px;color:var(--accent)}
+.sub{color:var(--muted);margin:0 0 12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:14px}
+.pass{border-left:4px solid var(--accent)}
+.pass p{margin:0 0 8px}
+.q{font-weight:600;margin:0 0 10px;line-height:2.1}
+.opt{display:flex;gap:10px;align-items:flex-start;padding:8px 10px;border:1px solid var(--line);border-radius:8px;margin-bottom:6px;cursor:pointer}
+.opt input{margin-top:4px}
+input[type=text],textarea{box-sizing:border-box;padding:8px 10px;font:inherit;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--text)}
+.card>input[type=text],textarea{width:100%}
+.q input[type=text]{width:9.5em;max-width:100%;margin:0 4px;font-weight:400}
+button{font-size:1rem;padding:10px 18px;border-radius:8px;border:0;background:var(--accent);color:#fff;cursor:pointer}
+button.sec{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+.right{border-color:var(--ok)!important;background:var(--okbg)}
+.wrong{border-color:var(--bad)!important;background:var(--badbg)}
+.fb{margin-top:8px;font-size:.92rem;color:var(--muted)}
+.tag{font-size:.8rem;color:var(--muted);font-weight:400}
+.score{font-size:1.6rem;font-weight:700}
+.bar{height:8px;background:var(--line);border-radius:4px;overflow:hidden;margin:8px 0 14px}
+.bar div{height:100%;background:var(--accent);width:0}
+</style>
+</head>
+<body>
+<main>
+<h1 id="title"></h1>
+<p class="sub" id="sub"></p>
+<div class="card"><label for="name"><b>Họ và tên</b></label><input type="text" id="name" placeholder="Nguyễn Văn A" autocomplete="name" style="width:100%;margin-top:6px"></div>
+<div class="bar"><div id="prog"></div></div>
+<div id="quiz"></div>
+<div style="display:flex;gap:10px;flex-wrap:wrap">
+<button id="submit">Nộp bài &amp; chấm điểm</button>
+<button class="sec" id="reset" style="display:none">Làm lại</button>
+</div>
+<div class="card" id="result" style="display:none;margin-top:16px">
+<div class="score" id="scoreTxt"></div>
+<p class="sub">Phần tự luận giáo viên sẽ chấm riêng. Gửi nội dung bên dưới cho giáo viên (chụp màn hình hoặc sao chép).</p>
+<textarea id="summary" rows="8" readonly></textarea>
+</div>
+</main>
+<script>
+/* ===== GIÁO VIÊN CHỈNH Ở ĐÂY =====
+ mc: q, options[], answer (bắt đầu từ 0), why
+ gap: q, answers[] (viết lại cả câu; liệt kê các đáp án chấp nhận), why
+ multi: q có nhiều chỗ ___, answers[] là danh sách theo từng chỗ trống, mỗi chỗ là mảng các đáp án chấp nhận, why
+ open: q (tự luận, không chấm tự động, gửi kèm bài cho giáo viên)
+*/
+const QUIZ = {
+  title: "Buổi 10 – Unit 8: Prepositions of time and place",
+  sub: "Giới từ in, on, at cho thời gian và địa điểm. Bấm “Nộp bài” để xem điểm.",
+  sections: [
+    {title:"Writing – Bài 1: Điền in, on hoặc at", note:"Điền in, on hoặc at vào từng chỗ trống.", items:[
+      {type:"multi", q:"I was born ___ 1998, ___ the summer.", answers:[["in"],["in"]], why:"in + năm; in + mùa."},
+      {type:"multi", q:"Let’s meet ___ the cinema ___ 7 o’clock.", answers:[["at"],["at"]], why:"at + địa điểm cụ thể; at + giờ cụ thể."},
+      {type:"multi", q:"My keys are ___ the drawer, not ___ the table.", answers:[["in"],["on"]], why:"in = bên trong vật; on = trên bề mặt."},
+      {type:"multi", q:"We’re going on holiday ___ August, but we’re leaving ___ Friday morning.", answers:[["in"],["on"]], why:"in + tháng; on + Friday morning."},
+      {type:"multi", q:"There’s a good restaurant ___ page 12 of this guidebook.", answers:[["on"]], why:"on + trang sách."},
+      {type:"multi", q:"She lives ___ 45 Green Street, ___ London.", answers:[["at"],["in"]], why:"at + địa chỉ; in + thành phố."},
+      {type:"multi", q:"I’ll see you ___ the door ___ five minutes.", answers:[["at"],["in"]], why:"at the door (cụm cố định); in five minutes = sau 5 phút nữa."},
+      {type:"multi", q:"What are you doing ___ New Year’s Eve?", answers:[["on","at"]], why:"on New Year’s Eve (ngày cụ thể). Với kỳ nghỉ lễ nói chung cũng dùng at (at Christmas, at New Year)."}
+    ]},
+    {title:"Writing – Bài 2: Sửa lỗi", note:"Mỗi câu có 1 lỗi về giới từ hoặc dùng thừa giới từ. Viết lại cả câu cho đúng.", items:[
+      {type:"gap", q:"I’ll call you on tomorrow morning.", answers:["I'll call you tomorrow morning","I will call you tomorrow morning"], why:"Không dùng giới từ trước tomorrow."},
+      {type:"gap", q:"We’re meeting in the train station at 9 o’clock.", answers:["We're meeting at the train station at 9 o'clock","We are meeting at the train station at 9 o'clock"], why:"Địa điểm nhỏ, điểm trên hành trình: at the train station."},
+      {type:"gap", q:"She was born at 2001, in April.", answers:["She was born in 2001, in April","She was born in 2001 in April","She was born in April 2001","She was born in April, 2001"], why:"in + năm."}
+    ]},
+    {title:"Luyện thêm – In, on, at", note:"Phần bổ sung từ bảng lý thuyết. Điền in, on hoặc at.", items:[
+      {type:"multi", q:"Paris is wonderful ___ April.", answers:[["in"]], why:"in + tháng."},
+      {type:"multi", q:"I got a new car ___ Saturday.", answers:[["on"]], why:"on + ngày trong tuần."},
+      {type:"multi", q:"There’s a bus ___ ten past three.", answers:[["at"]], why:"at + giờ cụ thể."},
+      {type:"multi", q:"Last year, we stayed ___ Mykonos.", answers:[["on"]], why:"on + đảo."},
+      {type:"multi", q:"We often go skiing ___ winter.", answers:[["in"]], why:"in + mùa."},
+      {type:"multi", q:"What’s it like ___ the North Pole?", answers:[["at"]], why:"at + địa điểm cụ thể/chính xác."}
+    ]},
+    {title:"Writing – Bài 3: Đoạn văn", note:"Phần này giáo viên chấm riêng.", items:[
+      {type:"open", q:"Viết 6–8 câu miêu tả lịch trình một ngày bình thường của bạn (A typical day in my life), dùng ít nhất 6 giới từ in/on/at khác nhau. Đặt các giới từ đã dùng trong dấu [ ] (ví dụ: [at] 6 o’clock)."}
+    ]},
+    {title:"Reading – A Weekend Away", passage:[
+      "Last month, my family and I went on a short trip to Da Lat. We arrived on Friday evening and stayed at a small hotel in the city centre. Our room was on the third floor, and there was a beautiful view of the mountains in the distance.",
+      "On Saturday morning, we woke up early and had breakfast at a cafe on the main street. In the afternoon, we visited a famous flower garden, and in the evening, we walked around the lake. At night, the town was quiet and peaceful.",
+      "We left on Sunday at around 10 o’clock. I really enjoyed the trip, and I hope we can go back in the future — maybe in winter next time, when it’s even colder!"
+    ], items:[
+      {type:"mc", q:"When did the family arrive in Da Lat?", options:["On Friday evening","On Saturday morning","On Sunday at 10 o’clock","In the winter"], answer:0, why:"“We arrived on Friday evening”."},
+      {type:"mc", q:"Where was their hotel room, and what could they see from it?", options:["On the third floor, with a view of the mountains","On the first floor, with a view of the lake","In the city centre, with a view of a flower garden","On the main street, with a view of a cafe"], answer:0, why:"“Our room was on the third floor, and there was a beautiful view of the mountains”."},
+      {type:"mc", q:"What did they do on Saturday morning and in the afternoon?", options:["Had breakfast at a cafe, then visited a flower garden","Walked around the lake, then went home","Visited a flower garden, then had breakfast","Stayed at the hotel all day"], answer:0, why:"Sáng thứ Bảy ăn sáng ở quán cà phê, chiều đi thăm vườn hoa."},
+      {type:"mc", q:"What time did they leave on Sunday?", options:["Around 10 o’clock","At 7 o’clock","In the afternoon","At night"], answer:0, why:"“We left on Sunday at around 10 o’clock”."},
+      {type:"open", q:"Have you ever been on a similar weekend trip? Describe when and where. (viết câu đầy đủ)"},
+      {type:"open", q:"Tìm trong bài đọc 8 cụm từ có chứa in/on/at và phân loại chúng theo nhóm: thời gian hay địa điểm."}
+    ]}
+  ]
+};
+/* ===== HẾT PHẦN CHỈNH ===== */
+
+const norm=s=>s.toLowerCase().replace(/[’‘]/g,"'").replace(/\s+/g," ").trim().replace(/[.!?]+$/,"").trim();
+const $=id=>document.getElementById(id);
+const quiz=$("quiz");
+$("title").textContent=QUIZ.title;$("sub").textContent=QUIZ.sub;document.title=QUIZ.title;
+const ALL=[];QUIZ.sections.forEach(s=>s.items.forEach(it=>ALL.push(it)));
+const graded=()=>ALL.map((it,i)=>[it,i]).filter(([it])=>it.type!=="open");
+const blanks=i=>Array.from(document.querySelectorAll("#c"+i+" input[type=text]"));
+
+function build(){
+  quiz.innerHTML="";let n=0;
+  QUIZ.sections.forEach(sec=>{
+    const h=document.createElement("h2");h.textContent=sec.title;quiz.appendChild(h);
+    if(sec.note){const p=document.createElement("p");p.className="sub";p.textContent=sec.note;quiz.appendChild(p);}
+    if(sec.passage){const b=document.createElement("div");b.className="card pass";sec.passage.forEach(t=>{const p=document.createElement("p");p.textContent=t;b.appendChild(p)});quiz.appendChild(b);}
+    sec.items.forEach(it=>{
+      const i=n++;
+      const c=document.createElement("div");c.className="card";c.id="c"+i;
+      const q=document.createElement("p");q.className="q";
+      if(it.type==="multi"){
+        q.append((i+1)+". ");
+        it.q.split("___").forEach((part,k,arr)=>{
+          q.append(part);
+          if(k<arr.length-1){const t=document.createElement("input");t.type="text";t.autocomplete="off";t.autocapitalize="off";t.spellcheck=false;t.oninput=progress;q.appendChild(t);}
+        });
+      }else{
+        q.textContent=(i+1)+". "+it.q;
+      }
+      if(it.type==="open"){const t=document.createElement("span");t.className="tag";t.textContent=" (tự luận)";q.appendChild(t);}
+      c.appendChild(q);
+      if(it.type==="mc"){
+        it.options.forEach((o,j)=>{
+          const l=document.createElement("label");l.className="opt";
+          const r=document.createElement("input");r.type="radio";r.name="q"+i;r.value=j;r.onchange=progress;
+          const s=document.createElement("span");s.textContent=o;
+          l.append(r,s);c.appendChild(l);
+        });
+      }else if(it.type==="gap"){
+        const t=document.createElement("input");t.type="text";t.autocomplete="off";t.autocapitalize="off";t.spellcheck=false;t.oninput=progress;c.appendChild(t);
+      }else if(it.type==="open"){
+        const t=document.createElement("textarea");t.rows=4;c.appendChild(t);
+      }
+      const fb=document.createElement("div");fb.className="fb";fb.id="f"+i;c.appendChild(fb);
+      quiz.appendChild(c);
+    });
+  });
+  progress();
+}
+function answered(i){
+  const it=ALL[i];
+  if(it.type==="mc")return !!document.querySelector('input[name="q'+i+'"]:checked');
+  return blanks(i).some(b=>b.value.trim()!=="");
+}
+function progress(){
+  const g=graded(),n=g.filter(([,i])=>answered(i)).length;
+  $("prog").style.width=(100*n/g.length)+"%";
+}
+function grade(){
+  let score=0;
+  graded().forEach(([it,i])=>{
+    const c=$("c"+i),fb=$("f"+i);let ok=false,shown="";
+    if(it.type==="mc"){
+      const ch=document.querySelector('input[name="q'+i+'"]:checked');
+      ok=!!ch&&+ch.value===it.answer;shown=it.options[it.answer];
+      c.querySelectorAll(".opt").forEach((l,j)=>{
+        l.classList.remove("right","wrong");
+        if(j===it.answer)l.classList.add("right");else if(ch&&+ch.value===j)l.classList.add("wrong");
+        l.querySelector("input").disabled=true;
+      });
+    }else if(it.type==="multi"){
+      const bs=blanks(i);ok=true;
+      bs.forEach((b,k)=>{
+        const good=it.answers[k].some(a=>norm(a)===norm(b.value));
+        b.classList.remove("right","wrong");b.classList.add(good?"right":"wrong");b.disabled=true;
+        if(!good)ok=false;
+      });
+      shown=it.answers.map(a=>a[0]).join(" … ");
+    }else{
+      const t=blanks(i)[0];ok=it.answers.some(a=>norm(a)===norm(t.value));shown=it.answers[0];
+      t.classList.remove("right","wrong");t.classList.add(ok?"right":"wrong");t.disabled=true;
+    }
+    if(ok)score++;
+    fb.textContent=(ok?"✓ Đúng. ":"✗ Sai. Đáp án: "+shown+". ")+(it.why||"");
+  });
+  ALL.forEach((it,i)=>{if(it.type==="open"){document.querySelector("#c"+i+" textarea").readOnly=true;$("f"+i).textContent="Giáo viên sẽ chấm phần này.";}});
+  const total=graded().length,name=$("name").value.trim()||"(chưa nhập tên)";
+  $("scoreTxt").textContent="Điểm tự động: "+score+"/"+total+" ("+Math.round(100*score/total)/10+"/10)";
+  let s=name+" – "+QUIZ.title+"\nĐiểm tự động: "+score+"/"+total+"\nNgày: "+new Date().toLocaleString("vi-VN");
+  ALL.forEach((it,i)=>{if(it.type==="open"){const v=document.querySelector("#c"+i+" textarea").value.trim();s+="\n\n["+(i+1)+"] "+(v||"(bỏ trống)");}});
+  $("summary").value=s;
+  $("result").style.display="block";$("reset").style.display="inline-block";$("submit").style.display="none";
+  $("result").scrollIntoView({behavior:"smooth"});
+}
+$("submit").onclick=()=>{
+  const left=graded().filter(([,i])=>!answered(i)).length;
+  if(left&&!confirm("Còn "+left+" câu chưa làm. Vẫn nộp bài?"))return;
+  grade();
+};
+$("reset").onclick=()=>{build();$("result").style.display="none";$("reset").style.display="none";$("submit").style.display="inline-block";window.scrollTo({top:0,behavior:"smooth"})};
+build();
+</script>
+</body>
+</html>
