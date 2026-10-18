@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Buổi 12 – Review 3: Units 7, 8, 9</title>
+<style>
+:root{--bg:#f6f7fb;--card:#fff;--text:#1d2433;--muted:#5d6678;--line:#dfe3ec;--accent:#2b6cb0;--ok:#1f8a4c;--okbg:#e4f5ea;--bad:#c0392b;--badbg:#fbe9e7;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12151c;--card:#1c212c;--text:#e8ebf2;--muted:#9aa4b8;--line:#2e3545;--accent:#6aa7e8;--ok:#5fd18a;--okbg:#17321f;--bad:#ff8a7a;--badbg:#3a1d1a}}
+:root[data-theme="dark"]{--bg:#12151c;--card:#1c212c;--text:#e8ebf2;--muted:#9aa4b8;--line:#2e3545;--accent:#6aa7e8;--ok:#5fd18a;--okbg:#17321f;--bad:#ff8a7a;--badbg:#3a1d1a}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:720px;margin:0 auto;padding:20px 16px 48px}
+h1{font-size:1.4rem;margin:0 0 4px}
+h2{font-size:1.1rem;margin:22px 0 4px;color:var(--accent)}
+.sub{color:var(--muted);margin:0 0 12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:14px}
+.pass{border-left:4px solid var(--accent)}
+.pass p{margin:0 0 8px}
+.q{font-weight:600;margin:0 0 10px;line-height:2.1}
+.opt{display:flex;gap:10px;align-items:flex-start;padding:8px 10px;border:1px solid var(--line);border-radius:8px;margin-bottom:6px;cursor:pointer}
+.opt input{margin-top:4px}
+input[type=text],textarea{box-sizing:border-box;padding:8px 10px;font:inherit;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--text)}
+.card>input[type=text],textarea{width:100%}
+.q input[type=text]{width:9.5em;max-width:100%;margin:0 4px;font-weight:400}
+button{font-size:1rem;padding:10px 18px;border-radius:8px;border:0;background:var(--accent);color:#fff;cursor:pointer}
+button.sec{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+.right{border-color:var(--ok)!important;background:var(--okbg)}
+.wrong{border-color:var(--bad)!important;background:var(--badbg)}
+.fb{margin-top:8px;font-size:.92rem;color:var(--muted)}
+.tag{font-size:.8rem;color:var(--muted);font-weight:400}
+.score{font-size:1.6rem;font-weight:700}
+.bar{height:8px;background:var(--line);border-radius:4px;overflow:hidden;margin:8px 0 14px}
+.bar div{height:100%;background:var(--accent);width:0}
+</style>
+</head>
+<body>
+<main>
+<h1 id="title"></h1>
+<p class="sub" id="sub"></p>
+<div class="card"><label for="name"><b>Họ và tên</b></label><input type="text" id="name" placeholder="Nguyễn Văn A" autocomplete="name" style="width:100%;margin-top:6px"></div>
+<div class="bar"><div id="prog"></div></div>
+<div id="quiz"></div>
+<div style="display:flex;gap:10px;flex-wrap:wrap">
+<button id="submit">Nộp bài &amp; chấm điểm</button>
+<button class="sec" id="reset" style="display:none">Làm lại</button>
+</div>
+<div class="card" id="result" style="display:none;margin-top:16px">
+<div class="score" id="scoreTxt"></div>
+<p class="sub">Phần tự luận giáo viên sẽ chấm riêng. Gửi nội dung bên dưới cho giáo viên (chụp màn hình hoặc sao chép).</p>
+<textarea id="summary" rows="8" readonly></textarea>
+</div>
+</main>
+<script>
+/* ===== GIÁO VIÊN CHỈNH Ở ĐÂY =====
+ mc: q, options[], answer (bắt đầu từ 0), why
+ gap: q, answers[] (viết lại cả câu; liệt kê các đáp án chấp nhận), why
+ multi: q có nhiều chỗ ___, answers[] là danh sách theo từng chỗ trống, mỗi chỗ là mảng các đáp án chấp nhận, why
+ open: q (tự luận, không chấm tự động, gửi kèm bài cho giáo viên)
+*/
+const QUIZ = {
+  title: "Buổi 12 – Review 3: Units 7, 8, 9",
+  sub: "Ôn tập cấu trúc tương lai, giới từ in/on/at và từ vựng Unit 9. Bấm “Nộp bài” để xem điểm.",
+  sections: [
+    {title:"Kiểm tra ôn tập – Phần A: Cấu trúc tương lai", note:"Điền dạng đúng của động từ trong ngoặc, chọn cấu trúc tương lai phù hợp nhất.", items:[
+      {type:"multi", q:"Look at the sky! I think it ___ (rain) soon.", answers:[["is going to rain","'s going to rain","will rain","'ll rain"]], why:"Dự đoán có bằng chứng nhìn thấy (bầu trời): be going to phù hợp nhất. “will” cũng đúng ngữ pháp."},
+      {type:"multi", q:"We ___ (have) dinner with my parents this Saturday — it’s already arranged.", answers:[["are having","'re having"]], why:"Việc đã sắp xếp: present continuous."},
+      {type:"multi", q:"The plane ___ (depart) at 10:45 tomorrow.", answers:[["departs"]], why:"Lịch trình cố định: present simple."},
+      {type:"multi", q:"I promise I ___ (call) you as soon as I arrive.", answers:[["will call","'ll call"]], why:"Lời hứa: will."},
+      {type:"multi", q:"She hasn’t decided yet, but she ___ (probably/travel) to Japan next year.", answers:[["is probably going to travel","'s probably going to travel"]], why:"Ý định chưa sắp xếp cụ thể: be going to (probably đứng sau is)."}
+    ]},
+    {title:"Kiểm tra ôn tập – Phần B: in, on hoặc at", note:"Điền in, on hoặc at vào từng chỗ trống.", items:[
+      {type:"multi", q:"We’re meeting ___ the airport ___ 6 o’clock.", answers:[["at"],["at"]], why:"at + địa điểm cụ thể; at + giờ cụ thể."},
+      {type:"multi", q:"My flight leaves ___ the morning, ___ Tuesday.", answers:[["in"],["on"]], why:"in the morning; on + ngày trong tuần."},
+      {type:"multi", q:"She lives ___ a small village ___ the coast.", answers:[["in"],["on"]], why:"in + khu vực/làng; on the coast (cụm cố định)."},
+      {type:"multi", q:"There’s a map ___ page 20 of the guidebook.", answers:[["on"]], why:"on + trang sách."},
+      {type:"multi", q:"What are you doing ___ New Year?", answers:[["at"]], why:"at + kỳ nghỉ lễ."}
+    ]},
+    {title:"Kiểm tra ôn tập – Phần C: Phrasal verb và từ vựng Unit 9", note:"Điền phrasal verb hoặc từ vựng Unit 9 phù hợp, chia đúng dạng nếu cần.", items:[
+      {type:"multi", q:"Please ___ ___ the bus at the next stop.", answers:[["get"],["off"]], why:"get off dùng cho xe buýt, tàu."},
+      {type:"multi", q:"We need to ___ our flight tickets before prices go up.", answers:[["book"]], why:"book = đặt trước."},
+      {type:"multi", q:"The plane is about to ___ ___ — please fasten your seatbelt.", answers:[["take"],["off"]], why:"take off = cất cánh."},
+      {type:"multi", q:"Our train was ___ by two hours because of the weather.", answers:[["delayed"]], why:"be delayed = bị trì hoãn."}
+    ]},
+    {title:"Writing – Bài 1: Hoàn thành đoạn văn", note:"Dùng cấu trúc tương lai đúng và giới từ in/on/at phù hợp.", items:[
+      {type:"multi", q:"Next month, I ___ (go) on a trip to Da Nang — I’ve already booked the flight.", answers:[["am going","'m going"]], why:"Đã đặt vé, kế hoạch đã sắp xếp: present continuous."},
+      {type:"multi", q:"We ___ (leave) ___ Friday morning and arrive ___ the afternoon.", answers:[["are leaving","'re leaving","leave"],["on"],["in"]], why:"are leaving (đã sắp xếp) hoặc leave (lịch bay cố định); on Friday morning; in the afternoon."},
+      {type:"multi", q:"I think the weather ___ (be) warm, so I’m going to pack light clothes.", answers:[["will be","'ll be","is going to be","'s going to be"]], why:"Dự đoán: will hoặc be going to."},
+      {type:"multi", q:"My friend says she ___ (help) me find a good hotel ___ the coast.", answers:[["will help","'ll help"],["on"]], why:"Đề nghị giúp: will; on the coast (cụm cố định)."},
+      {type:"multi", q:"I can’t wait — I’m sure it ___ (be) an amazing trip!", answers:[["will be","'ll be","is going to be","'s going to be"]], why:"Dự đoán: will hoặc be going to."}
+    ]},
+    {title:"Writing – Bài 2: Đoạn văn", note:"Phần này giáo viên chấm riêng.", items:[
+      {type:"open", q:"Viết 8–10 câu về “Plans for your next trip”. Bắt buộc dùng: ít nhất 2 câu present continuous/be going to (kế hoạch/ý định), 1 câu will (dự đoán), 3 giới từ in/on/at khác nhau, và ít nhất 3 từ vựng Unit 9."}
+    ]},
+    {title:"Reading – Planning a Trip Abroad", passage:[
+      "Next summer, my sister and I are going on our first trip abroad together. We’re flying to Thailand on the 15th of July, and we’ve already booked our accommodation at a small resort on the coast. Our flight leaves at 6 a.m., so we’re going to set off for the airport very early.",
+      "We haven’t decided everything yet, but we’re going to visit a famous temple, and we’re probably going to try some local food too. My sister says she’ll take lots of photos for souvenirs. I think the weather is going to be very hot in July, so we need to pack light clothes.",
+      "I’ve never travelled abroad before, so I’m a little nervous about catching the right buses and finding our way around. But I’m sure it will be an unforgettable journey!"
+    ], items:[
+      {type:"mc", q:"When are the sisters flying to Thailand, and what time does their flight leave?", options:["On the 15th of July; at 6 a.m.","On the 15th of June; at 6 p.m.","Next week; at 6 a.m.","On the 5th of July; at 10 a.m."], answer:0, why:"“We’re flying to Thailand on the 15th of July … Our flight leaves at 6 a.m.”"},
+      {type:"mc", q:"What have they already booked?", options:["Their accommodation at a small resort on the coast","A cruise around the islands","A coach to the temple","A guided tour"], answer:0, why:"“we’ve already booked our accommodation at a small resort on the coast”."},
+      {type:"mc", q:"What do they plan to do while they’re there?", options:["Visit a famous temple and try some local food","Learn to swim and go on a cruise","Work as volunteers","Stay at the resort all week"], answer:0, why:"“we’re going to visit a famous temple, and we’re probably going to try some local food”."},
+      {type:"mc", q:"Why is the writer a little nervous about the trip?", options:["She has never travelled abroad and worries about catching the right buses and finding her way","She is afraid of flying","She doesn’t like hot weather","She has lost her passport"], answer:0, why:"“I’ve never travelled abroad before, so I’m a little nervous about catching the right buses and finding our way around.”"},
+      {type:"open", q:"Have you ever travelled abroad for the first time? How did you feel before the trip? (viết câu đầy đủ)"},
+      {type:"open", q:"Tìm trong bài đọc: 2 câu present continuous (tương lai), 3 câu be going to, 2 câu will, và 3 cụm từ chứa in/on/at. Viết lại các câu/cụm từ đó."}
+    ]}
+  ]
+};
+/* ===== HẾT PHẦN CHỈNH ===== */
+
+const norm=s=>s.toLowerCase().replace(/[’‘]/g,"'").replace(/\s+/g," ").trim().replace(/[.!?]+$/,"").trim();
+const $=id=>document.getElementById(id);
+const quiz=$("quiz");
+$("title").textContent=QUIZ.title;$("sub").textContent=QUIZ.sub;document.title=QUIZ.title;
+const ALL=[];QUIZ.sections.forEach(s=>s.items.forEach(it=>ALL.push(it)));
+const graded=()=>ALL.map((it,i)=>[it,i]).filter(([it])=>it.type!=="open");
+const blanks=i=>Array.from(document.querySelectorAll("#c"+i+" input[type=text]"));
+
+function build(){
+  quiz.innerHTML="";let n=0;
+  QUIZ.sections.forEach(sec=>{
+    const h=document.createElement("h2");h.textContent=sec.title;quiz.appendChild(h);
+    if(sec.note){const p=document.createElement("p");p.className="sub";p.textContent=sec.note;quiz.appendChild(p);}
+    if(sec.passage){const b=document.createElement("div");b.className="card pass";sec.passage.forEach(t=>{const p=document.createElement("p");p.textContent=t;b.appendChild(p)});quiz.appendChild(b);}
+    sec.items.forEach(it=>{
+      const i=n++;
+      const c=document.createElement("div");c.className="card";c.id="c"+i;
+      const q=document.createElement("p");q.className="q";
+      if(it.type==="multi"){
+        q.append((i+1)+". ");
+        it.q.split("___").forEach((part,k,arr)=>{
+          q.append(part);
+          if(k<arr.length-1){const t=document.createElement("input");t.type="text";t.autocomplete="off";t.autocapitalize="off";t.spellcheck=false;t.oninput=progress;q.appendChild(t);}
+        });
+      }else{
+        q.textContent=(i+1)+". "+it.q;
+      }
+      if(it.type==="open"){const t=document.createElement("span");t.className="tag";t.textContent=" (tự luận)";q.appendChild(t);}
+      c.appendChild(q);
+      if(it.type==="mc"){
+        it.options.forEach((o,j)=>{
+          const l=document.createElement("label");l.className="opt";
+          const r=document.createElement("input");r.type="radio";r.name="q"+i;r.value=j;r.onchange=progress;
+          const s=document.createElement("span");s.textContent=o;
+          l.append(r,s);c.appendChild(l);
+        });
+      }else if(it.type==="gap"){
+        const t=document.createElement("input");t.type="text";t.autocomplete="off";t.autocapitalize="off";t.spellcheck=false;t.oninput=progress;c.appendChild(t);
+      }else if(it.type==="open"){
+        const t=document.createElement("textarea");t.rows=4;c.appendChild(t);
+      }
+      const fb=document.createElement("div");fb.className="fb";fb.id="f"+i;c.appendChild(fb);
+      quiz.appendChild(c);
+    });
+  });
+  progress();
+}
+function answered(i){
+  const it=ALL[i];
+  if(it.type==="mc")return !!document.querySelector('input[name="q'+i+'"]:checked');
+  return blanks(i).some(b=>b.value.trim()!=="");
+}
+function progress(){
+  const g=graded(),n=g.filter(([,i])=>answered(i)).length;
+  $("prog").style.width=(100*n/g.length)+"%";
+}
+function grade(){
+  let score=0;
+  graded().forEach(([it,i])=>{
+    const c=$("c"+i),fb=$("f"+i);let ok=false,shown="";
+    if(it.type==="mc"){
+      const ch=document.querySelector('input[name="q'+i+'"]:checked');
+      ok=!!ch&&+ch.value===it.answer;shown=it.options[it.answer];
+      c.querySelectorAll(".opt").forEach((l,j)=>{
+        l.classList.remove("right","wrong");
+        if(j===it.answer)l.classList.add("right");else if(ch&&+ch.value===j)l.classList.add("wrong");
+        l.querySelector("input").disabled=true;
+      });
+    }else if(it.type==="multi"){
+      const bs=blanks(i);ok=true;
+      bs.forEach((b,k)=>{
+        const good=it.answers[k].some(a=>norm(a)===norm(b.value));
+        b.classList.remove("right","wrong");b.classList.add(good?"right":"wrong");b.disabled=true;
+        if(!good)ok=false;
+      });
+      shown=it.answers.map(a=>a[0]).join(" … ");
+    }else{
+      const t=blanks(i)[0];ok=it.answers.some(a=>norm(a)===norm(t.value));shown=it.answers[0];
+      t.classList.remove("right","wrong");t.classList.add(ok?"right":"wrong");t.disabled=true;
+    }
+    if(ok)score++;
+    fb.textContent=(ok?"✓ Đúng. ":"✗ Sai. Đáp án: "+shown+". ")+(it.why||"");
+  });
+  ALL.forEach((it,i)=>{if(it.type==="open"){document.querySelector("#c"+i+" textarea").readOnly=true;$("f"+i).textContent="Giáo viên sẽ chấm phần này.";}});
+  const total=graded().length,name=$("name").value.trim()||"(chưa nhập tên)";
+  $("scoreTxt").textContent="Điểm tự động: "+score+"/"+total+" ("+Math.round(100*score/total)/10+"/10)";
+  let s=name+" – "+QUIZ.title+"\nĐiểm tự động: "+score+"/"+total+"\nNgày: "+new Date().toLocaleString("vi-VN");
+  ALL.forEach((it,i)=>{if(it.type==="open"){const v=document.querySelector("#c"+i+" textarea").value.trim();s+="\n\n["+(i+1)+"] "+(v||"(bỏ trống)");}});
+  $("summary").value=s;
+  $("result").style.display="block";$("reset").style.display="inline-block";$("submit").style.display="none";
+  $("result").scrollIntoView({behavior:"smooth"});
+}
+$("submit").onclick=()=>{
+  const left=graded().filter(([,i])=>!answered(i)).length;
+  if(left&&!confirm("Còn "+left+" câu chưa làm. Vẫn nộp bài?"))return;
+  grade();
+};
+$("reset").onclick=()=>{build();$("result").style.display="none";$("reset").style.display="none";$("submit").style.display="inline-block";window.scrollTo({top:0,behavior:"smooth"})};
+build();
+</script>
+</body>
+</html>
