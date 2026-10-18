@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Buổi 5 – Unit 4: Present perfect simple & continuous</title>
+<style>
+:root{--bg:#f6f7fb;--card:#fff;--text:#1d2433;--muted:#5d6678;--line:#dfe3ec;--accent:#2b6cb0;--ok:#1f8a4c;--okbg:#e4f5ea;--bad:#c0392b;--badbg:#fbe9e7;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12151c;--card:#1c212c;--text:#e8ebf2;--muted:#9aa4b8;--line:#2e3545;--accent:#6aa7e8;--ok:#5fd18a;--okbg:#17321f;--bad:#ff8a7a;--badbg:#3a1d1a}}
+:root[data-theme="dark"]{--bg:#12151c;--card:#1c212c;--text:#e8ebf2;--muted:#9aa4b8;--line:#2e3545;--accent:#6aa7e8;--ok:#5fd18a;--okbg:#17321f;--bad:#ff8a7a;--badbg:#3a1d1a}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:720px;margin:0 auto;padding:20px 16px 48px}
+h1{font-size:1.4rem;margin:0 0 4px}
+h2{font-size:1.1rem;margin:22px 0 4px;color:var(--accent)}
+.sub{color:var(--muted);margin:0 0 12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:14px}
+.pass{border-left:4px solid var(--accent)}
+.pass p{margin:0 0 8px}
+.q{font-weight:600;margin:0 0 10px;line-height:2.1}
+.opt{display:flex;gap:10px;align-items:flex-start;padding:8px 10px;border:1px solid var(--line);border-radius:8px;margin-bottom:6px;cursor:pointer}
+.opt input{margin-top:4px}
+input[type=text],textarea{box-sizing:border-box;padding:8px 10px;font:inherit;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--text)}
+.card>input[type=text],textarea{width:100%}
+.q input[type=text]{width:9.5em;max-width:100%;margin:0 4px;font-weight:400}
+button{font-size:1rem;padding:10px 18px;border-radius:8px;border:0;background:var(--accent);color:#fff;cursor:pointer}
+button.sec{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+.right{border-color:var(--ok)!important;background:var(--okbg)}
+.wrong{border-color:var(--bad)!important;background:var(--badbg)}
+.fb{margin-top:8px;font-size:.92rem;color:var(--muted)}
+.tag{font-size:.8rem;color:var(--muted);font-weight:400}
+.score{font-size:1.6rem;font-weight:700}
+.bar{height:8px;background:var(--line);border-radius:4px;overflow:hidden;margin:8px 0 14px}
+.bar div{height:100%;background:var(--accent);width:0}
+</style>
+</head>
+<body>
+<main>
+<h1 id="title"></h1>
+<p class="sub" id="sub"></p>
+<div class="card"><label for="name"><b>Họ và tên</b></label><input type="text" id="name" placeholder="Nguyễn Văn A" autocomplete="name" style="width:100%;margin-top:6px"></div>
+<div class="bar"><div id="prog"></div></div>
+<div id="quiz"></div>
+<div style="display:flex;gap:10px;flex-wrap:wrap">
+<button id="submit">Nộp bài &amp; chấm điểm</button>
+<button class="sec" id="reset" style="display:none">Làm lại</button>
+</div>
+<div class="card" id="result" style="display:none;margin-top:16px">
+<div class="score" id="scoreTxt"></div>
+<p class="sub">Phần tự luận giáo viên sẽ chấm riêng. Gửi nội dung bên dưới cho giáo viên (chụp màn hình hoặc sao chép).</p>
+<textarea id="summary" rows="8" readonly></textarea>
+</div>
+</main>
+<script>
+/* ===== GIÁO VIÊN CHỈNH Ở ĐÂY =====
+ mc: q, options[], answer (bắt đầu từ 0), why
+ gap: q, answers[] (viết lại cả câu; liệt kê các đáp án chấp nhận), why
+ multi: q có nhiều chỗ ___, answers[] là danh sách theo từng chỗ trống, mỗi chỗ là mảng các đáp án chấp nhận, why
+ open: q (tự luận, không chấm tự động, gửi kèm bài cho giáo viên)
+*/
+const QUIZ = {
+  title: "Buổi 5 – Unit 4: Present perfect simple & continuous",
+  sub: "Present perfect simple (have/has + V3) và present perfect continuous (have/has been + V-ing). Bấm “Nộp bài” để xem điểm.",
+  sections: [
+    {title:"Writing – Bài 1: Chia động từ", note:"Điền present perfect simple hoặc present perfect continuous của động từ trong ngoặc.", items:[
+      {type:"multi", q:"I ___ (see) this film already — let’s watch something else.", answers:[["have seen","'ve seen"]], why:"already + kết quả đã hoàn thành: present perfect simple."},
+      {type:"multi", q:"She ___ (not/take) her driving test yet.", answers:[["hasn't taken","has not taken"]], why:"yet trong câu phủ định: present perfect simple."},
+      {type:"multi", q:"We ___ (learn) English for three years now.", answers:[["have been learning","'ve been learning","have learnt","'ve learnt","have learned","'ve learned"]], why:"for + khoảng thời gian: present perfect. Dạng continuous (have been learning) nhấn mạnh quá trình học."},
+      {type:"multi", q:"They ___ (paint) the house all day — it looks amazing so far!", answers:[["have been painting","'ve been painting"]], why:"all day, so far: nhấn mạnh quá trình, chưa xong: present perfect continuous."},
+      {type:"multi", q:"___ you ever ___ (be) to Japan?", answers:[["have"],["been"]], why:"Have you ever been …? Trải nghiệm trong đời: present perfect simple."},
+      {type:"multi", q:"He’s tired because he ___ (run) since 6 o’clock this morning.", answers:[["has been running","'s been running"]], why:"since + mốc thời gian, vừa mới kết thúc: present perfect continuous."}
+    ]},
+    {title:"Writing – Bài 2: Present perfect hay past simple?", note:"Chọn đáp án đúng. Đọc lời giải thích sau khi nộp bài.", items:[
+      {type:"mc", q:"I ___ my homework last night.", options:["finished","have finished"], answer:0, why:"Có mốc thời gian rõ ràng (last night): past simple."},
+      {type:"mc", q:"___ you ever ___ sushi?", options:["Did … try","Have … tried"], answer:1, why:"Trải nghiệm trong đời, không nói rõ thời điểm: present perfect."},
+      {type:"mc", q:"We ___ to this city in 2015.", options:["moved","have moved"], answer:0, why:"Có mốc thời gian rõ ràng (in 2015): past simple."}
+    ]},
+    {title:"Luyện thêm – for, since, yet, already, ever, never", note:"Phần bổ sung từ bảng lý thuyết. Điền một từ.", items:[
+      {type:"multi", q:"She’s taught German here ___ over five years.", answers:[["for"]], why:"for + khoảng thời gian."},
+      {type:"multi", q:"Mr Gray has taught French here ___ 2006.", answers:[["since"]], why:"since + mốc thời gian."},
+      {type:"multi", q:"We haven’t checked the answers ___.", answers:[["yet"]], why:"yet đứng cuối câu phủ định."},
+      {type:"multi", q:"I’ve ___ read that book — I don’t want to read it again.", answers:[["already"]], why:"already = đã rồi."},
+      {type:"multi", q:"Have you ___ had guitar lessons?", answers:[["ever"]], why:"Have you ever …? hỏi về trải nghiệm."},
+      {type:"multi", q:"I’ve ___ understood why people like horror films.", answers:[["never"]], why:"never = chưa bao giờ."}
+    ]},
+    {title:"Writing – Bài 3: Đoạn văn", note:"Phần này giáo viên chấm riêng.", items:[
+      {type:"open", q:"Viết 6–8 câu về những điều bạn đã làm/trải nghiệm trong đời (Things I have done in my life). Dùng ít nhất 3 câu present perfect simple và 1 câu present perfect continuous."}
+    ]},
+    {title:"Reading – A Life of Adventure", passage:[
+      "Maria has always loved travelling. She has visited more than thirty countries, and she has climbed some of the highest mountains in the world. She’s been travelling since she was eighteen years old, and she still hasn’t stopped!",
+      "This year, Maria has been planning her biggest trip yet — a six-month journey across South America. She has already bought her plane ticket, and she has been learning Spanish for the past few months to prepare. “I’ve never been to South America before,” she says, “so I’m very excited.”",
+      "Maria hasn’t decided exactly where she’ll go yet, but she has already made a long list of places she wants to see. “I’ve been dreaming about this trip for years,” she says. “Now it’s finally happening!”"
+    ], items:[
+      {type:"mc", q:"How many countries has Maria visited?", options:["More than thirty","About eighteen","Six","Only South American countries"], answer:0, why:"“She has visited more than thirty countries”."},
+      {type:"mc", q:"How long has Maria been travelling?", options:["Since she was eighteen years old","For six months","Since last year","For the past few months"], answer:0, why:"“She’s been travelling since she was eighteen years old”."},
+      {type:"mc", q:"What has Maria been doing to prepare for her trip to South America?", options:["Learning Spanish","Climbing mountains","Writing a book","Working in a travel agency"], answer:0, why:"“she has been learning Spanish for the past few months to prepare”."},
+      {type:"mc", q:"Has Maria decided exactly where she’ll go?", options:["No, she hasn’t decided yet","Yes, she has decided on every place","Yes, she has booked all her hotels","Yes, she has chosen only one country"], answer:0, why:"“Maria hasn’t decided exactly where she’ll go yet”."},
+      {type:"open", q:"Have you ever dreamed about a big trip like Maria’s? Tell me about it. (viết câu đầy đủ)"},
+      {type:"open", q:"Tìm trong bài đọc 3 câu present perfect simple và 2 câu present perfect continuous. Viết lại các câu đó và giải thích tại sao mỗi câu dùng thì đó."}
+    ]}
+  ]
+};
+/* ===== HẾT PHẦN CHỈNH ===== */
+
+const norm=s=>s.toLowerCase().replace(/[’‘]/g,"'").replace(/\s+/g," ").trim().replace(/[.!?]+$/,"").trim();
+const $=id=>document.getElementById(id);
+const quiz=$("quiz");
+$("title").textContent=QUIZ.title;$("sub").textContent=QUIZ.sub;document.title=QUIZ.title;
+const ALL=[];QUIZ.sections.forEach(s=>s.items.forEach(it=>ALL.push(it)));
+const graded=()=>ALL.map((it,i)=>[it,i]).filter(([it])=>it.type!=="open");
+const blanks=i=>Array.from(document.querySelectorAll("#c"+i+" input[type=text]"));
+
+function build(){
+  quiz.innerHTML="";let n=0;
+  QUIZ.sections.forEach(sec=>{
+    const h=document.createElement("h2");h.textContent=sec.title;quiz.appendChild(h);
+    if(sec.note){const p=document.createElement("p");p.className="sub";p.textContent=sec.note;quiz.appendChild(p);}
+    if(sec.passage){const b=document.createElement("div");b.className="card pass";sec.passage.forEach(t=>{const p=document.createElement("p");p.textContent=t;b.appendChild(p)});quiz.appendChild(b);}
+    sec.items.forEach(it=>{
+      const i=n++;
+      const c=document.createElement("div");c.className="card";c.id="c"+i;
+      const q=document.createElement("p");q.className="q";
+      if(it.type==="multi"){
+        q.append((i+1)+". ");
+        it.q.split("___").forEach((part,k,arr)=>{
+          q.append(part);
+          if(k<arr.length-1){const t=document.createElement("input");t.type="text";t.autocomplete="off";t.autocapitalize="off";t.spellcheck=false;t.oninput=progress;q.appendChild(t);}
+        });
+      }else{
+        q.textContent=(i+1)+". "+it.q;
+      }
+      if(it.type==="open"){const t=document.createElement("span");t.className="tag";t.textContent=" (tự luận)";q.appendChild(t);}
+      c.appendChild(q);
+      if(it.type==="mc"){
+        it.options.forEach((o,j)=>{
+          const l=document.createElement("label");l.className="opt";
+          const r=document.createElement("input");r.type="radio";r.name="q"+i;r.value=j;r.onchange=progress;
+          const s=document.createElement("span");s.textContent=o;
+          l.append(r,s);c.appendChild(l);
+        });
+      }else if(it.type==="gap"){
+        const t=document.createElement("input");t.type="text";t.autocomplete="off";t.autocapitalize="off";t.spellcheck=false;t.oninput=progress;c.appendChild(t);
+      }else if(it.type==="open"){
+        const t=document.createElement("textarea");t.rows=4;c.appendChild(t);
+      }
+      const fb=document.createElement("div");fb.className="fb";fb.id="f"+i;c.appendChild(fb);
+      quiz.appendChild(c);
+    });
+  });
+  progress();
+}
+function answered(i){
+  const it=ALL[i];
+  if(it.type==="mc")return !!document.querySelector('input[name="q'+i+'"]:checked');
+  return blanks(i).some(b=>b.value.trim()!=="");
+}
+function progress(){
+  const g=graded(),n=g.filter(([,i])=>answered(i)).length;
+  $("prog").style.width=(100*n/g.length)+"%";
+}
+function grade(){
+  let score=0;
+  graded().forEach(([it,i])=>{
+    const c=$("c"+i),fb=$("f"+i);let ok=false,shown="";
+    if(it.type==="mc"){
+      const ch=document.querySelector('input[name="q'+i+'"]:checked');
+      ok=!!ch&&+ch.value===it.answer;shown=it.options[it.answer];
+      c.querySelectorAll(".opt").forEach((l,j)=>{
+        l.classList.remove("right","wrong");
+        if(j===it.answer)l.classList.add("right");else if(ch&&+ch.value===j)l.classList.add("wrong");
+        l.querySelector("input").disabled=true;
+      });
+    }else if(it.type==="multi"){
+      const bs=blanks(i);ok=true;
+      bs.forEach((b,k)=>{
+        const good=it.answers[k].some(a=>norm(a)===norm(b.value));
+        b.classList.remove("right","wrong");b.classList.add(good?"right":"wrong");b.disabled=true;
+        if(!good)ok=false;
+      });
+      shown=it.answers.map(a=>a[0]).join(" … ");
+    }else{
+      const t=blanks(i)[0];ok=it.answers.some(a=>norm(a)===norm(t.value));shown=it.answers[0];
+      t.classList.remove("right","wrong");t.classList.add(ok?"right":"wrong");t.disabled=true;
+    }
+    if(ok)score++;
+    fb.textContent=(ok?"✓ Đúng. ":"✗ Sai. Đáp án: "+shown+". ")+(it.why||"");
+  });
+  ALL.forEach((it,i)=>{if(it.type==="open"){document.querySelector("#c"+i+" textarea").readOnly=true;$("f"+i).textContent="Giáo viên sẽ chấm phần này.";}});
+  const total=graded().length,name=$("name").value.trim()||"(chưa nhập tên)";
+  $("scoreTxt").textContent="Điểm tự động: "+score+"/"+total+" ("+Math.round(100*score/total)/10+"/10)";
+  let s=name+" – "+QUIZ.title+"\nĐiểm tự động: "+score+"/"+total+"\nNgày: "+new Date().toLocaleString("vi-VN");
+  ALL.forEach((it,i)=>{if(it.type==="open"){const v=document.querySelector("#c"+i+" textarea").value.trim();s+="\n\n["+(i+1)+"] "+(v||"(bỏ trống)");}});
+  $("summary").value=s;
+  $("result").style.display="block";$("reset").style.display="inline-block";$("submit").style.display="none";
+  $("result").scrollIntoView({behavior:"smooth"});
+}
+$("submit").onclick=()=>{
+  const left=graded().filter(([,i])=>!answered(i)).length;
+  if(left&&!confirm("Còn "+left+" câu chưa làm. Vẫn nộp bài?"))return;
+  grade();
+};
+$("reset").onclick=()=>{build();$("result").style.display="none";$("reset").style.display="none";$("submit").style.display="inline-block";window.scrollTo({top:0,behavior:"smooth"})};
+build();
+</script>
+</body>
+</html>
